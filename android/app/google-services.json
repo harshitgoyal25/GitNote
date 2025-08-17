@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "4623844283",
+    "project_id": "gitnote-7b75a",
+    "storage_bucket": "gitnote-7b75a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4623844283:android:6c4e8fa1079c7b0acb7a9e",
+        "android_client_info": {
+          "package_name": "com.example.gitnote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4623844283-7eaht5dhhd6b7eet3g7jn0s9g2q7unl9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmboiOgt6kfpjhR5e-mFcMJNwIHanjLDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4623844283-7eaht5dhhd6b7eet3g7jn0s9g2q7unl9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "4623844283-64enngirdfqrp7qlo0314758gqc8hto0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gitnote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
