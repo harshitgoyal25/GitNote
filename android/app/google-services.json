@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "4623844283-h2gjj05jk8g128h0njhoph9nf0s16kq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gitnote",
+            "certificate_hash": "d71fb6fa72fe6dbc11cd177ee5b07fc087b53def"
+          }
+        },
+        {
           "client_id": "4623844283-7eaht5dhhd6b7eet3g7jn0s9g2q7unl9.apps.googleusercontent.com",
           "client_type": 3
         }

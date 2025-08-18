@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '4623844283',
     projectId: 'gitnote-7b75a',
     storageBucket: 'gitnote-7b75a.firebasestorage.app',
+    androidClientId: '4623844283-h2gjj05jk8g128h0njhoph9nf0s16kq4.apps.googleusercontent.com',
+    iosClientId: '4623844283-64enngirdfqrp7qlo0314758gqc8hto0.apps.googleusercontent.com',
     iosBundleId: 'com.example.gitnote',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '4623844283',
     projectId: 'gitnote-7b75a',
     storageBucket: 'gitnote-7b75a.firebasestorage.app',
+    androidClientId: '4623844283-h2gjj05jk8g128h0njhoph9nf0s16kq4.apps.googleusercontent.com',
+    iosClientId: '4623844283-64enngirdfqrp7qlo0314758gqc8hto0.apps.googleusercontent.com',
     iosBundleId: 'com.example.gitnote',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'gitnote-7b75a.firebasestorage.app',
     measurementId: 'G-0T6S8RVC8J',
   );
+
 }

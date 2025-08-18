@@ -1,10 +1,7 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("com.google.gms.google-services") // FlutterFire config
+    id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -25,15 +22,13 @@ android {
     defaultConfig {
         applicationId = "com.example.gitnote"
         minSdk = 23
-        targetSdk = 35 // Set your desired targetSdkVersion directly
-        versionCode = 1 // Set your desired versionCode directly
-        versionName = "1.0.0" // Set your desired versionName directly
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -41,4 +36,15 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Firebase BoM (ensures all Firebase libs use compatible versions)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+
+    // Firebase Auth
+    implementation("com.google.firebase:firebase-auth")
+
+    // Google Play Services Auth (needed for Google Sign-In)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }

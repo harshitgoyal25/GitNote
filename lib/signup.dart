@@ -108,7 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               'assets/gitnote_logo.png',
                               height: 38,
                               width: 38,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                           ),
                           SizedBox(width: 7),

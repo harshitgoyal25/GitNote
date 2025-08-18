@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gitnote/home.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:ui';
-
-// Make sure you have '/signup', '/forgot_password', and '/home' routes configured in your MaterialApp.
+import 'widgettt/show_app_message.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,25 +17,10 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   String error = '';
-  bool loading = false;
+  bool loading = false; // for email/password button
+  bool isLoading = false; // for google login button
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
+  // ---------------- EMAIL/PASSWORD LOGIN ----------------
   Future<void> login() async {
     setState(() {
       loading = true;
@@ -47,26 +33,68 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text.trim(),
       );
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+      showAppMessage(context, "Login Successful", isError: false);
     } on FirebaseAuthException catch (e) {
+      showAppMessage(context, e.message ?? 'Login failed.', isError: true);
+    } catch (e) {
       setState(() {
-        error = e.message ?? 'Login failed.';
+        error = "Login failed: $e";
       });
     } finally {
       if (mounted) {
-        setState(() {
-          loading = false;
-        });
+        setState(() => loading = false);
       }
     }
   }
 
+  // ---------------- GOOGLE LOGIN ----------------
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<UserCredential?> signInWithGoogle() async {
+    final googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) return null; // cancelled
+
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> loginWithGoogle() async {
+    try {
+      setState(() => isLoading = true);
+      final userCredential = await signInWithGoogle();
+      if (userCredential != null) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+        showAppMessage(context, "Google login successful", isError: false);
+      } else {
+        showAppMessage(context, "Google sign-in canceled", isError: true);
+      }
+    } catch (e) {
+      showAppMessage(context, "Google login failed: $e", isError: true);
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
+          // background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: RadialGradient(
@@ -76,6 +104,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+          // main content
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 68, 16, 10),
@@ -84,27 +113,26 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   const SizedBox(height: 6),
                   Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    Image.asset(
-      'assets/gitnote_logo.png',
-      height: 46,
-      width: 46,
-    ),
-    const SizedBox(width: 10),
-    const Text(
-      'GitNote',
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontWeight: FontWeight.bold,
-        fontSize: 36,
-        color: Colors.white,
-        letterSpacing: 1.5,
-      ),
-    ),
-  ],
-),
-
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/gitnote_logo.png',
+                        height: 46,
+                        width: 46,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'GitNote',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 36,
+                          color: Colors.white,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 30),
                   Center(
                     child: Container(
@@ -185,7 +213,10 @@ class _LoginPageState extends State<LoginPage> {
                                   alignment: Alignment.centerRight,
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/forgot_password');
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/forgot_password',
+                                      );
                                     },
                                     child: const Text(
                                       'Forget password',
@@ -197,16 +228,23 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 16),
+                                // ---- EMAIL LOGIN BUTTON ----
                                 Center(
                                   child: SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF2E69DF),
+                                        backgroundColor: const Color(
+                                          0xFF2E69DF,
+                                        ),
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 14, horizontal: 10),
+                                          vertical: 14,
+                                          horizontal: 10,
+                                        ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(22),
+                                          borderRadius: BorderRadius.circular(
+                                            22,
+                                          ),
                                         ),
                                       ),
                                       onPressed: loading ? null : login,
@@ -243,6 +281,79 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ],
+                                const SizedBox(height: 22),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Divider(
+                                        color: Colors.white38,
+                                        thickness: 1,
+                                        endIndent: 8,
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Or login with",
+                                      style: TextStyle(
+                                        color: Colors.white60,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Divider(
+                                        color: Colors.white38,
+                                        thickness: 1,
+                                        indent: 8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                // ---- GOOGLE LOGIN BUTTON ----
+                                Center(
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton.icon(
+                                      icon: Image.asset(
+                                        'assets/google_logo.png',
+                                        height: 22,
+                                        width: 22,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            22,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                          horizontal: 8,
+                                        ),
+                                      ),
+                                      onPressed: isLoading
+                                          ? null
+                                          : loginWithGoogle,
+                                      label: isLoading
+                                          ? const SizedBox(
+                                              width: 22,
+                                              height: 22,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.black,
+                                                strokeWidth: 2.1,
+                                              ),
+                                            )
+                                          : const Text(
+                                              "Login with Google",
+                                              style: TextStyle(
+                                                color: Color(0xFF646464),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
